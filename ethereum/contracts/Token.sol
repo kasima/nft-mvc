@@ -9,7 +9,11 @@ contract Token is ERC20 {
         ERC20(name, symbol) public {
     }
 
-    function mint (uint256 _amount) public {
-        _mint(msg.sender, _amount);
+    function mint (address receiver, uint256 amount) public {
+        _mint(receiver, amount);
+    }
+
+    function burn (uint256 amount) public {
+        _burn(msg.sender, amount);
     }
 }
