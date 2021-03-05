@@ -1,7 +1,14 @@
 const { expect } = require("chai");
 
+async function mintAndApprove(amm, atoken, btoken, aamount, bamount, from) {
+  await atoken.mint(from, aamount);
+  await btoken.mint(from, bamount);
+  await atoken.approve(amm.address, aamount);
+  await btoken.approve(amm.address, bamount);
+}
+
 describe("AmmMVC", function() {
-  before("setup test", async function () {
+  beforeEach("test setup", async function () {
     this.addresses = await ethers.getSigners()
     const Token = await ethers.getContractFactory("Token");
     this.atoken = await Token.deploy("tokenA", "A");
@@ -15,36 +22,60 @@ describe("AmmMVC", function() {
     this.lptoken = await ethers.getContractAt("LPToken", lpAddress);
   })
 
-  it("swap", async function() {
-    // A_pool = 10
-    // B_pool = 500
-    // invariant = 10 * 500 = 5000
-
-    await this.atoken.mint(this.addresses[0].address, 11);
-    await this.btoken.mint(this.addresses[0].address, 500);
-    await this.atoken.approve(this.amm.address, 11);
-    await this.btoken.approve(this.amm.address, 500);
-    await this.amm.addLiquidity(10, 500);
-    expect(await this.lptoken.balanceOf(this.addresses[0].address)).to.equal(5000);
-    expect(await this.amm.getAReserve()).to.equal(10);
+  it("should mint and redeem LPtokens", async function () {
+    await mintAndApprove(this.amm, this.atoken, this.btoken, 11, 500, this.addresses[0].address);
+    await this.amm.addLiquidity(11, 500);
+    expect(await this.lptoken.balanceOf(this.addresses[0].address)).to.equal(11);
+    expect(await this.amm.getAReserve()).to.equal(11);
     expect(await this.amm.getBReserve()).to.equal(500);
+
+    await this.lptoken.approve(this.amm.address, 11);
+    await this.amm.removeLiquidity(11);
+    expect(await this.amm.getBReserve()).to.equal(0);
+    expect(await this.amm.getAReserve()).to.equal(0);
+  })
+
+  it("should mint the correct proportion of LPtokens after first deposit", async function () {
+    await mintAndApprove(this.amm, this.atoken, this.btoken, 150, 750, this.addresses[0].address);
+    await this.amm.addLiquidity(100, 500);
+    expect(await this.lptoken.balanceOf(this.addresses[0].address)).to.equal(100);
+    expect(await this.amm.getAReserve()).to.equal(100);
+    expect(await this.amm.getBReserve()).to.equal(500);
+
+    await this.amm.addLiquidity(50, 250);
+    expect(await this.lptoken.balanceOf(this.addresses[0].address)).to.equal(150);
+    expect(await this.amm.getAReserve()).to.equal(150);
+    expect(await this.amm.getBReserve()).to.equal(750);
+
+    await this.lptoken.approve(this.amm.address, 150);
+    await this.amm.removeLiquidity(50);
+    expect(await this.amm.getAReserve()).to.equal(100);
+    expect(await this.amm.getBReserve()).to.equal(500);
+
+    await this.amm.removeLiquidity(100);
+    expect(await this.amm.getAReserve()).to.equal(0);
+    expect(await this.amm.getBReserve()).to.equal(0);
+    expect(await this.atoken.balanceOf(this.addresses[0].address)).to.equal(150);
+    expect(await this.btoken.balanceOf(this.addresses[0].address)).to.equal(750);
+  })
+
+  it("should swap a tokens for b tokens", async function() {
+    await mintAndApprove(this.amm, this.atoken, this.btoken, 11, 500, this.addresses[0].address);
+    await this.amm.addLiquidity(10, 500);
 
     // Buyer sends: 1 A
     // A_pool = 10 + 1 = 11
     // B_pool = 5000/11 = 454
     // Buyer receieves: 500 - 454 = 46 B
 
-    expect(await this.amm.getAtoBOutput(1)).to.equal(46);
+    expect(await this.amm.calculateAtoBOutput(1)).to.equal(46);
     await this.amm.swapAtoB(1);
     expect(await this.amm.getBReserve()).to.equal(454);
     expect(await this.amm.getAReserve()).to.equal(11);
-
-    await this.lptoken.approve(this.amm.address, 5000);
-    await this.amm.removeLiquidity(5000);
+    expect(await this.btoken.balanceOf(this.addresses[0].address)).to.equal(46);
+    await this.lptoken.approve(this.amm.address, 10);
+    await this.amm.removeLiquidity(10);
     expect(await this.atoken.balanceOf(this.addresses[0].address)).to.equal(11);
     expect(await this.btoken.balanceOf(this.addresses[0].address)).to.equal(500);
-    expect(await this.amm.getBReserve()).to.equal(0);
-    expect(await this.amm.getAReserve()).to.equal(0);
-
   });
 });

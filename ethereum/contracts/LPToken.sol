@@ -6,8 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LPToken is ERC20, Ownable {
 
-    constructor(string memory name, string memory symbol)
-        ERC20(name, symbol) public {
+    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
     }
 
     function mint (address receiver, uint256 amount) public onlyOwner {
