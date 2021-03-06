@@ -2,6 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./LPToken.sol";
 import "hardhat/console.sol";
@@ -41,7 +42,7 @@ contract AmmReserve {
 
 // @title AMM.MVC
 // @notice example implementation of constant function market making DEX in Solidity
-contract AmmMVC is AmmReserve {
+contract AmmMVC is AmmReserve, ReentrancyGuard {
     using SafeMath for uint256;
 
     event LiquidityAdded(address _caller, uint256 _aAmount, uint256 _bAmount, uint256 _lpAmount);
@@ -68,6 +69,7 @@ contract AmmMVC is AmmReserve {
         public
         nonZero(_aAmount)
         nonZero(_bAmount)
+        nonReentrant
         returns
         (uint256 _lpMinted)
     {
@@ -94,6 +96,7 @@ contract AmmMVC is AmmReserve {
     function removeLiquidity(uint256 _amount)
         public
         nonZero(_amount)
+        nonReentrant
         returns
         (uint256 aRemoved, uint256 bRemoved)
     {
@@ -131,7 +134,7 @@ contract AmmMVC is AmmReserve {
     // @dev token B must be approved beforehand
     // @param _bAmount amount of btoken to swap
     // @return the amount of A token returned to caller
-    function swapBtoA(uint256 _bAmount) public nonZero(_bAmount) returns (uint256) {
+    function swapBtoA(uint256 _bAmount) public nonZero(_bAmount) nonReentrant returns (uint256) {
         require(lpToken.totalSupply() > 0, "AmmMVC: no liquidity to trade");
         uint256 aOutput = calculateBtoAOutput(_bAmount);
         bToken.transferFrom(msg.sender, address(this), _bAmount);
@@ -146,7 +149,7 @@ contract AmmMVC is AmmReserve {
     // @dev token A must be approved beforehand
     // @param _aAmount amount of btoken to swap
     // @return the amount of B token return to caller
-    function swapAtoB(uint256 _aAmount) public nonZero(_aAmount) returns (uint256) {
+    function swapAtoB(uint256 _aAmount) public nonZero(_aAmount) nonReentrant returns (uint256) {
         uint256 bOutput = calculateAtoBOutput(_aAmount);
         aToken.transferFrom(msg.sender, address(this), _aAmount);
         bToken.transfer(msg.sender, bOutput);

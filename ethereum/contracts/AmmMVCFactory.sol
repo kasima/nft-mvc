@@ -12,14 +12,15 @@ contract AmmMVCFactory {
     string public constant symbol = "AMMMVC-LP";
 
     struct tokenPair {
+        address exchange;
         address tokenA;
         address tokenB;
     }
 
-    mapping (address => tokenPair) public addressToTokenPair;
+    tokenPair[] public tokenPairs;
     mapping (address => mapping(address => bool)) public pairExists;
 
-    event TokenPairCreated(address pair, address indexed tokenA, address indexed tokenB);
+    event TokenPairCreated(address indexed pair, address indexed tokenA, address indexed tokenB);
 
     //@notice create and return an address of the token pair
     //@dev the pair must not exist
@@ -33,7 +34,8 @@ contract AmmMVCFactory {
                 );
         AmmMVC ammmvc = new AmmMVC(_aToken, _bToken, name, symbol);
         _pair = address(ammmvc);
-        addressToTokenPair[_pair] = tokenPair(_aToken, _bToken);
+        /* addressToTokenPair[_pair] = tokenPair(_aToken, _bToken); */
+        tokenPairs.push(tokenPair(_pair, _aToken, _bToken));
         pairExists[_aToken][_bToken] = true;
         pairExists[_bToken][_aToken] = true;
         emit TokenPairCreated(_pair, _aToken, _bToken);
