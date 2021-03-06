@@ -44,6 +44,10 @@ contract AmmReserve {
 contract AmmMVC is AmmReserve {
     using SafeMath for uint256;
 
+    event LiquidityAdded(address _caller, uint256 _aAmount, uint256 _bAmount, uint256 _lpAmount);
+    event LiquidityRemoved(address _caller, uint256 _aAmount, uint256 _bAmount, uint256 _lpAmount);
+    event TokenSwapped(address _caller, address _input, address _output, uint256 _amountIn, uint256 _amountOut);
+
     constructor(address _aToken,
                 address _bToken,
                 string memory _lpname,
@@ -65,23 +69,22 @@ contract AmmMVC is AmmReserve {
         nonZero(_aAmount)
         nonZero(_bAmount)
         returns
-        (uint256)
+        (uint256 _lpMinted)
     {
-        uint256 toMint;
         if (lpToken.totalSupply() > 0) {
             require(
                     _aAmount.div(_bAmount) == getAReserve().div(getBReserve()),
-                    "the inputs are not the same ratio as the reserve"
+                    "AmmMVC: the inputs are not the same ratio as the reserve"
                     );
         }
         // we simply mint the amount of a tokens deposited, given that the ratio is correct
-        toMint = _aAmount;
+        _lpMinted = _aAmount;
         aToken.transferFrom(msg.sender, address(this), _aAmount);
         bToken.transferFrom(msg.sender, address(this), _bAmount);
         _setAReserve(getAReserve().add(_aAmount));
         _setBReserve(getBReserve().add(_bAmount));
-        lpToken.mint(msg.sender, toMint);
-        return toMint;
+        lpToken.mint(msg.sender, _lpMinted);
+        emit LiquidityAdded(msg.sender, _aAmount, _bAmount, _lpMinted);
     }
 
     // @notice redeem an amount of LP token for token A and B
@@ -103,13 +106,14 @@ contract AmmMVC is AmmReserve {
         _setBReserve(getBReserve().sub(bRemoved));
         aToken.transfer(msg.sender, aRemoved);
         bToken.transfer(msg.sender, bRemoved);
+        emit LiquidityRemoved(msg.sender, aRemoved, bRemoved, _amount);
     }
 
     // @notice calculate the expected A token output from B token amount
     // @param _bAmount amount in B token
     // @return the amount of token A
     function calculateBtoAOutput(uint256 _bAmount) public view returns (uint256) {
-        uint256 memory invarient = getInvariant();
+        uint256 invarient = getInvariant();
         uint256 newAReserve = invarient.div(getBReserve().add(_bAmount));
         return getAReserve().sub(newAReserve);
     }
@@ -118,7 +122,7 @@ contract AmmMVC is AmmReserve {
     // @param _aAmount amount in A token
     // @return the amount of token B
     function calculateAtoBOutput(uint256 _aAmount) public view returns (uint256) {
-        uint256 memory invarient = getInvariant();
+        uint256 invarient = getInvariant();
         uint256 newBReserve = invarient.div(getAReserve().add(_aAmount));
         return getBReserve().sub(newBReserve);
     }
@@ -128,11 +132,13 @@ contract AmmMVC is AmmReserve {
     // @param _bAmount amount of btoken to swap
     // @return the amount of A token returned to caller
     function swapBtoA(uint256 _bAmount) public nonZero(_bAmount) returns (uint256) {
+        require(lpToken.totalSupply() > 0, "AmmMVC: no liquidity to trade");
         uint256 aOutput = calculateBtoAOutput(_bAmount);
         bToken.transferFrom(msg.sender, address(this), _bAmount);
         aToken.transfer(msg.sender, aOutput);
         _setAReserve(getAReserve().sub(aOutput));
         _setBReserve(getBReserve().add(_bAmount));
+        emit TokenSwapped(msg.sender, bTokenAddress, aTokenAddress, _bAmount, aOutput);
         return aOutput;
     }
 
@@ -146,11 +152,12 @@ contract AmmMVC is AmmReserve {
         bToken.transfer(msg.sender, bOutput);
         _setAReserve(getAReserve().add(_aAmount));
         _setBReserve(getBReserve().sub(bOutput));
+        emit TokenSwapped(msg.sender, aTokenAddress, bTokenAddress, _aAmount, bOutput);
         return bOutput;
     }
 
     modifier nonZero(uint256 _amount) {
-        require(_amount != 0, "amount can't be zero");
+        require(_amount != 0, "AmmMVC: amount can't be zero");
         _;
     }
 }
