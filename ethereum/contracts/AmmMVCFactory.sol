@@ -20,7 +20,7 @@ contract AmmMVCFactory {
     tokenPair[] public tokenPairs;
     mapping (address => mapping(address => bool)) public pairExists;
 
-    event TokenPairCreated(address indexed pair, address indexed tokenA, address indexed tokenB);
+    event TokenPairCreated(uint256 index, address indexed tokenA, address indexed tokenB);
 
     //@notice create and return an address of the token pair
     //@dev the pair must not exist
@@ -34,10 +34,9 @@ contract AmmMVCFactory {
                 );
         AmmMVC ammmvc = new AmmMVC(_aToken, _bToken, name, symbol);
         _pair = address(ammmvc);
-        /* addressToTokenPair[_pair] = tokenPair(_aToken, _bToken); */
         tokenPairs.push(tokenPair(_pair, _aToken, _bToken));
         pairExists[_aToken][_bToken] = true;
         pairExists[_bToken][_aToken] = true;
-        emit TokenPairCreated(_pair, _aToken, _bToken);
+        emit TokenPairCreated(tokenPairs.length - 1, _aToken, _bToken);
     }
 }

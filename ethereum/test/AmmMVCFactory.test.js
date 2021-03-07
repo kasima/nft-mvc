@@ -21,7 +21,7 @@ describe("AmmMVCFactory", function() {
     it("should emit pair creation event", async function () {
       await expect(this.factory.createTokenPair(REGULAR_ADDRESS_1, REGULAR_ADDRESS_2))
         .to.emit(this.factory, "TokenPairCreated")
-        .withArgs("0x55652FF92Dc17a21AD6810Cce2F4703fa2339CAE", REGULAR_ADDRESS_1, REGULAR_ADDRESS_2);
+        .withArgs(0, REGULAR_ADDRESS_1, REGULAR_ADDRESS_2);
     });
 
     it("should not allow the same token pair to be created again", async function () {

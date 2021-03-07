@@ -9,11 +9,11 @@ contract LPToken is ERC20, Ownable {
     constructor(string memory name, string memory symbol) ERC20(name, symbol) {
     }
 
-    function mint (address receiver, uint256 amount) public onlyOwner {
+    function mint(address receiver, uint256 amount) public onlyOwner {
         _mint(receiver, amount);
     }
 
-    function burn (uint256 amount) public onlyOwner {
+    function burn(uint256 amount) public onlyOwner {
         _burn(msg.sender, amount);
     }
 }

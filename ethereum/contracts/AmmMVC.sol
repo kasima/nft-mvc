@@ -78,9 +78,11 @@ contract AmmMVC is AmmReserve, ReentrancyGuard {
                     _aAmount.div(_bAmount) == getAReserve().div(getBReserve()),
                     "AmmMVC: the inputs are not the same ratio as the reserve"
                     );
+            _lpMinted = _aAmount.mul(lpToken.totalSupply()).div(getAReserve());
+        } else {
+            // we simply mint the equivalent to the first deposit
+            _lpMinted = _aAmount;
         }
-        // we simply mint the amount of a tokens deposited, given that the ratio is correct
-        _lpMinted = _aAmount;
         aToken.transferFrom(msg.sender, address(this), _aAmount);
         bToken.transferFrom(msg.sender, address(this), _bAmount);
         _setAReserve(getAReserve().add(_aAmount));
@@ -100,6 +102,7 @@ contract AmmMVC is AmmReserve, ReentrancyGuard {
         returns
         (uint256 aRemoved, uint256 bRemoved)
     {
+        require(lpToken.balanceOf(msg.sender) >= _amount, "AmmMVC: not enough LP tokens");
         lpToken.transferFrom(msg.sender, address(this), _amount);
         // remove tokens from reserve prorportionate to the current LP supply
         aRemoved = _amount.mul(getAReserve()).div(lpToken.totalSupply());
@@ -160,7 +163,7 @@ contract AmmMVC is AmmReserve, ReentrancyGuard {
     }
 
     modifier nonZero(uint256 _amount) {
-        require(_amount != 0, "AmmMVC: amount can't be zero");
+        require(_amount > 0, "AmmMVC: amount can't be zero");
         _;
     }
 }
