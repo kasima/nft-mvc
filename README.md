@@ -18,12 +18,18 @@ We aim to demonstrate the language, frameworks, deployment, and tooling for all 
 - Live on a testnet
 
 
-## Supported Chains / Platforms / Languages
+## Supported Chains / Platforms / Languages / Frameworks
 
 - Ethereum
-  - Solidity
-  - Vyper
-  - YUL
+  - Frameworks
+    - Hardhat
+    - Truffle
+    - Brownie
+
+  - Languages
+    - Solidity
+    - Vyper
+    - YUL
 - Optimism
 - Arbitrum
 - ZKSync
@@ -38,3 +44,8 @@ We aim to demonstrate the language, frameworks, deployment, and tooling for all 
 ## Contributions
 
 All contributions welcome. Supported platforms chosen by our own interest. We do no descriminate on platforms as long as implementation requirements are met.
+
+
+## Resources
+- [ERC-20 Standard](https://ethereum.org/en/developers/docs/standards/tokens/erc-20/)
+- [Uniswap whitepaper](https://hackmd.io/@HaydenAdams/HJ9jLsfTz)
