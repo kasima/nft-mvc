@@ -4,7 +4,7 @@ Introducing AMM.MVC. We felt that the crypto space needed a chain-agnostic, deve
 
 Inspired by [TodoMVC](https://todomvc.com/), our goal is to build the _exact same_ Automated Market Maker (AMM) exchange on all smart contract platforms.
 
-We aim to demonstrate the language, frameworks, deployment, and tooling for all supported platforms.
+We aim to demonstrate the language, frameworks, deployment, and tooling for all supported platforms. Contracts will be built to the same test suite, as best we can, and use the same front end app.
 
 
 ## What's Implemented
