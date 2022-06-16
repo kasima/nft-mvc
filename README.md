@@ -21,13 +21,8 @@ We aim to demonstrate the language, frameworks, deployment, and tooling for all 
 ## Supported Chains / Platforms / Languages / Frameworks
 
 - Ethereum
-  - Frameworks
-    - Hardhat
-    - Truffle
-    - Brownie
-
   - Languages
-    - Solidity
+    - Solidity / Hardhat
     - Vyper
     - YUL
 - Optimism
