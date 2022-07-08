@@ -35,6 +35,46 @@ We aim to demonstrate the language, frameworks, deployment, and tooling for all 
 - Avalanche
 
 
+## Test Suite
+
+```
+describe "constructor()"
+  it "mints specified number of NFTs to the owner"
+
+describe "balanceOf()"
+  it "returns the number of NFTs owned by an address"
+
+describe "ownerOf()"
+  it "returns the owner address of a tokenID"
+
+describe "transferFrom()"
+  it "changes the owner of a tokenID if the owner calls the transaction"
+  it "changes the owner of a tokenID if the approved address calls the transaction"
+  it "emits a Transfer event"
+
+  it "does not transfer of a token that is not owned by the transaction sender"
+  it "does not transfer a token that is not approved"
+
+describe "approve()"
+  it "enables transfer for a given address"
+  it "emits an Approve event"
+
+  it "does not approve if transaction sender is not the owner"
+
+describe "setApprovalForAll()"
+  it "approves all NFTs owned by the sender for a specified operator"
+  it "emits an ApprovalForAll event"
+
+  it "does not approve if transaction sender is not the owner"
+
+describe "getApproved()"
+  it "returns the approved address of a tokenID"
+
+describe "isApprovedForAll()"
+  it "returns True if operator is approved for all an owner's NFT"
+```
+
+
 ## Contributions
 
 All contributions welcome. Supported platforms chosen by our own interest. We do no descriminate on platforms as long as implementation requirements are met.
