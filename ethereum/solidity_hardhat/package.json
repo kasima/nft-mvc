@@ -1,0 +1,14 @@
+{
+  "name": "solidity_hardhat",
+  "version": "1.0.0",
+  "description": "NFT.MVC in Solidity and Hardhat",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "hardhat": "^2.10.0"
+  }
+}
