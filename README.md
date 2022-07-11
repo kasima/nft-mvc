@@ -39,7 +39,7 @@ We aim to demonstrate the language, frameworks, deployment, and tooling for all 
 
 ```
 describe "constructor()"
-  it "mints specified number of NFTs to the owner"
+  it "mints specified number of NFTs"
 
 describe "balanceOf()"
   it "returns the number of NFTs owned by an address"
@@ -48,30 +48,28 @@ describe "ownerOf()"
   it "returns the owner address of a tokenID"
 
 describe "transferFrom()"
-  it "changes the owner of a tokenID if the owner calls the transaction"
-  it "changes the owner of a tokenID if the approved address calls the transaction"
+  it "changes the owner of a tokenID if called by the current owner"
   it "emits a Transfer event"
 
-  it "does not transfer of a token that is not owned by the transaction sender"
-  it "does not transfer a token that is not approved"
+  it "does not change the owner if not called by owner, approved, or operator"
 
 describe "approve()"
-  it "enables transfer for a given address"
+  it "allows transferFrom for an approved address"
   it "emits an Approve event"
 
-  it "does not approve if transaction sender is not the owner"
+  it "does not approve if not called by the owner"
 
 describe "setApprovalForAll()"
-  it "approves all NFTs owned by the sender for a specified operator"
+  it "allows transferFrom for all tokens owned by caller for operator addresses"
   it "emits an ApprovalForAll event"
 
-  it "does not approve if transaction sender is not the owner"
+  it "does not approve for tokens not owned by caller"
 
 describe "getApproved()"
   it "returns the approved address of a tokenID"
 
 describe "isApprovedForAll()"
-  it "returns True if operator is approved for all an owner's NFT"
+  it "returns True if operator is approved for owner's NFT"
 ```
 
 
