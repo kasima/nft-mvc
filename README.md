@@ -1,6 +1,6 @@
 # NFT.MVC
 
-Introducing NFT.MVC. We felt that the crypto space needed a chain-agnostic, developer-focused resource for developers to compare various smart contract platforms, whether they be L1s, L2s, bridges, etc.
+Introducing NFT.MVC. We felt that the crypto space needed a chain-agnostic, developer-focused resource to compare various smart contract platforms, whether they be L1s, L2s, bridges, etc.
 
 Inspired by [TodoMVC](https://todomvc.com/), our goal is to build functionally identical non-fungible token contract on all smart contract platforms.
 
@@ -77,7 +77,7 @@ describe "isApprovedForAll()"
 
 ## Contributions
 
-All contributions welcome. Supported platforms chosen by our own interest. We do no descriminate on platforms as long as implementation requirements are met.
+All contributions welcome. Supported platforms are currently chosen by our own interest. But we do not descriminate on platforms as long as implementation requirements are met.
 
 
 ## Resources
