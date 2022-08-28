@@ -1,0 +1,14 @@
+{
+  "language": "Yul",
+  "sources": { "ERC721.yul": { "urls": ["./contracts/ERC721.yul"]} },
+    "settings": {
+      "outputSelection": { "*": { "*": ["*"], "": [ "*" ] } },
+      "optimizer": {
+        "enabled": true,
+        "runs": 0,
+        "details": {
+          "yul": true
+        }
+      }
+    }
+}
